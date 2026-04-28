@@ -62,6 +62,45 @@ The project includes a `.gitattributes` file to:
 - Use **Git LFS** for image assets (`.jpg`, `.tif`, `.webp`, etc.) to keep the repository size manageable.
 - Ensure consistent line endings for Python and CSV files.
 
+---
+
+## Path Rewriter Script: `rewrite_paths.py`
+
+This utility rewrites the `Full Path` column in the source CSV, replacing Windows UNC path prefixes with Linux-compatible absolute paths. It is intended to be run once before deploying the image database on a Linux server.
+
+### How It Works
+
+1. **Reads** the source CSV (`UMF_Database_image_list_1.csv`) using the same semicolon-delimiter and BOM-aware logic as `webpcompress.py`.
+2. **Matches** each `Full Path` value against `WINDOWS_PREFIX` using a case-insensitive `startswith` check.
+3. **Transforms** the matched path:
+   - Strips the Windows UNC prefix (e.g. `\\argos.storage.uu.se\MyGroups$\Bronze`).
+   - Replaces all backslashes (`\`) with forward slashes (`/`).
+   - Prepends the configured `LINUX_PREFIX` (e.g. `/opt/media/gust/Bronze`).
+   - Collapses any accidental double slashes.
+4. **Writes** the result to a new file (`UMF_Database_image_list_linux.csv`), leaving the original untouched.
+5. **Reports** a summary: how many paths were replaced vs. left unchanged.
+
+### Configuration
+
+Edit the constants at the top of `rewrite_paths.py`:
+
+| Variable | Default | Description |
+|---|---|---|
+| `input_csv` | `./UMF_Database_image_list_1.csv` | Source CSV file |
+| `output_csv` | `./UMF_Database_image_list_linux.csv` | Output CSV file |
+| `WINDOWS_PREFIX` | `\\argos.storage.uu.se\MyGroups$\Bronze` | UNC prefix to strip |
+| `LINUX_PREFIX` | `/opt/media/gust/Bronze` | Linux prefix to prepend |
+
+### Usage
+
+```bash
+python rewrite_paths.py
+```
+
+The original CSV is never modified. The output file can be used directly with `webpcompress.py` by updating its `input_csv` variable.
+
+---
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
