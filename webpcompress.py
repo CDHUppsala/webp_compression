@@ -15,7 +15,7 @@ import sys
 csv.field_size_limit(10000000)
 
 # --- CONFIGURATION ---
-input_csv = r'./UMF_Database_image_list_1.csv'
+input_csv = r'./UMF_Database_image_list_linux.csv'
 demo_folder = r'./Gust_Images'
 
 # We set this high so it runs the whole batch, but skips the heavy stuff
@@ -56,9 +56,9 @@ def create_vendor_demo():
                 continue
 
             # 2. Skip if it doesn't match your database prefixes
-            if not fname.upper().startswith(approved_prefixes):
+            #if not fname.upper().startswith(approved_prefixes):
                 # Optional: print(f"⏩ Skipping non-standard name: {fname}")
-                continue
+              #  continue
 
             if os.path.exists(src):
                 try:
